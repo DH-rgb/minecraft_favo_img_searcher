@@ -17,9 +17,9 @@ Googleから以下キーワードでダウンロード(youtubeサムネ等が多
 1. ResNet18のpretrainedモデルで試してみる（2クラスのクロスエントロピー）
 2. 自前実装のネットワークで分類
 https://qiita.com/MuAuan/items/86a56637a1ebf455e180
-3. iic実装
-4. SVMを利用
-5. 出来たらtwitterクローラーと組み合わせて実行
+3. ~~iic実装~~
+4. ~~SVMを利用~~
+5. ~~出来たらtwitterクローラーと組み合わせて実行~~
 
 
 # その1
