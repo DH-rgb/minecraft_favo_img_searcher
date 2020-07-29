@@ -57,27 +57,32 @@ MyNet(
   (fc1): Linear(in_features=186624, out_features=1000, bias=True)
   (fc2): Linear(in_features=1000, out_features=2, bias=True)
 ) -->
-try1\\
-iteration: 133[Loss: 0.783205509185791] [Acc: 0.641791045665741]\\
+try1
+
+iteration: 133[Loss: 0.783205509185791] [Acc: 0.641791045665741]
 * 各Conv層の出力はReLUを通し，fc層の出力はスロープ0.2のLeakyReLUに通す．
 * パラメータ数の割に余り精度が出ていないので，パラメータ削減しながらの精度向上を目指す．
 * ハイパラをいじるのは沼なので，固定して改善する．
 
-try2\\
+try2
 * ランダムクロップによる位置ずれを吸収するためにMaxPoolingを施す．
 * 全体的にCNNレイヤーの大きさを小さくする.
 * ランダムにグレースケール化するAugmentation追加（構造情報を少し考慮するため）
-* Cifarの時はカラー正規化をいれていたが，元の色合いが重要だと感じ削除\\
-transforms.RandomApply([transforms.Grayscale(num_output_channels=3)], p=0.4)\\
+* Cifarの時はカラー正規化をいれていたが，元の色合いが重要だと感じ削除
+
+transforms.RandomApply([transforms.Grayscale(num_output_channels=3)], p=0.4)
+
 iteration: 133[Loss: 0.6184483766555786] [Acc: 0.6865671873092651]
 
-try3\\
+try3
 * クロップサイズを(0.8,1.0)に調整．スペースを意識した画像とかもあるため．
 * ランダムに透視変換を行う．Affine変換だと歪みが大きすぎて，イイねした画像も歪んだ結果はイイねではないことがあり得たため．
+
 iteration: 133[Loss: 0.6184482574462891] [Acc: 0.6865671873092651]
 
-try4\\
+try4
 * 過学習気味だったのでDropout層を追加．
+
 iteration: 133[Loss: 0.6630185842514038] [Acc: 0.7238805890083313]
 
 
