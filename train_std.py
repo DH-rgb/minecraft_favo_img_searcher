@@ -1,15 +1,16 @@
 import torch
 import torch.nn as nn 
 import torch.nn.functional as F 
-from torchvision import models
+from torchvision import models, datasets, transforms
+from torchvision.utils import save_image
 
-from utils import ResNet_Dataset
+from utils import MyDataset
+from model import MyNet
 
 import os
 import sys 
 import argparse
 import pdb
-
 
 def main(args):
     #hyper parameter
@@ -19,29 +20,28 @@ def main(args):
     beta2 = 0.99
     gpu = 0
 
-
     #set model
-    model_ft = models.resnet18(pretrained=True)
-    num_features = model_ft.fc.in_features
-    model_ft.fc = nn.Linear(num_features,2)
+    model = MyNet()
+
     #set GPU or CPU
     if gpu >= 0 and torch.cuda.is_available():
         device = 'cuda:{}'.format(gpu)
     else:
-        device = 'cpu'
-    model_ft.to(device)
+        device = 'cpu'  
+    model.to(device)
 
     #print params
     params = 0
-    for p in model_ft.parameters():
+    for p in model.parameters():
         if p.requires_grad:
-            params += p.numel()     
+            params += p.numel()         
     print(params)
+    print(model)
 
     criteria = nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(model_ft.parameters(), lr=lr,betas=(beta1,beta2))
+    optimizer = torch.optim.Adam(model.parameters(),lr=lr,betas=(beta1,beta2))
 
-    dataset = ResNet_Dataset("data/",is_train=True)
+    dataset = MyDataset("data/",is_train=True)
     train_loader = torch.utils.data.DataLoader(dataset,batch_size=4,shuffle=True)
     
     for epoch in range(end_epoch): 
@@ -49,9 +49,10 @@ def main(args):
         epoch_acc = 0
         for i, data in enumerate(train_loader):
             print("\repoch: {} iteration: {}".format(epoch,i),end="")
+            
             inputs, labels = data 
             optimizer.zero_grad()
-            outputs = model_ft(inputs.to(device))
+            outputs = model(inputs.to(device))
             _, preds = torch.max(outputs.data,1)
             loss = criteria(outputs,labels.to(device))
 
@@ -65,11 +66,11 @@ def main(args):
         epoch_acc = epoch_acc/float(len(train_loader)*4)
         
 
-        print("[Loss: {}] [Acc: {}]".format(epoch_loss,epoch_acc))
-        if epoch%10==0:
-            if not os.path.exists("models/ResNet/"+args.model):
-                os.makedirs("models/ResNet/"+args.model)
-            torch.save(model_ft.state_dict(),"models/ResNet/"+args.model+"/"+str(epoch)+".pth")
+        print("[epoch: {}] [Loss: {:.4f}] [Acc: {:.4f}]".format(epoch, epoch_loss, epoch_acc))
+        if (epoch+1)%10==0:
+            if not os.path.exists("models/"+args.model):
+                os.makedirs("models/"+args.model)
+            torch.save(model.state_dict(),"models/"+args.model+"/"+str(epoch)+".pth")
 
 
 
